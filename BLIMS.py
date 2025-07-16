@@ -86,7 +86,31 @@ class Subwindow1:
     def go_back(self):
         self.master.destroy()
         self.main_window_root.deiconify()
+    def import_measurement(self):
+        # Create a new Toplevel window for the confirmation message
+        confirmation_window = tk.Toplevel(self.master)
+        confirmation_window.title("Import Status")
+        confirmation_window.geometry("250x100") # Set size for the small window
+        confirmation_window.transient(self.master) # Make it appear on top of the main window
+        confirmation_window.grab_set() # Make it modal (user must interact with it)
 
+        # Label to display the message
+        message_label = tk.Label(confirmation_window, text="Measurement Imported!", font=("Arial", 12, "bold"))
+        message_label.pack(pady=20)
+
+        # Button to close the confirmation window
+        ok_button = tk.Button(confirmation_window, text="OK", command=confirmation_window.destroy)
+        ok_button.pack(pady=5)
+
+        # Center the new window relative to its parent (optional, but nice UX)
+        self.center_window(confirmation_window)
+
+        # You can still retrieve batch and analysis if needed for actual import logic
+        selected_batch = self.batch_entry.get()
+        selected_analysis_type = self.selected_analysis.get()
+        print(f"Importing for Batch: {selected_batch}, Analysis: {selected_analysis_type}") # For console debug
+
+        # The actual data import logic would go here before showing the confirmation window
     def import_measurement(self):
         # Create a new Toplevel window for the confirmation message
         confirmation_window = tk.Toplevel(self.master)
