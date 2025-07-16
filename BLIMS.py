@@ -36,30 +36,82 @@ class MainWindow:
 class Subwindow1:
     def __init__(self, master, main_window_root):
         self.master = master
-        self.main_window_root = main_window_root # Reference to the main window's root
+        self.main_window_root = main_window_root
         master.title("Quality Analysis")
-        master.geometry("800x200")
+        master.geometry("500x500")
 
-        self.label = tk.Label(master, text="Quality Analysis", font=("Arial", 14))
+        self.label = tk.Label(master, text="Quality Analysis", font=("Arial", 16, "bold"))
         self.label.pack(pady=20)
-        # --- Batch Number Field for Subwindow1 ---
-        self.batch_label = tk.Label(master, text="Batch Number:", font=("Arial", 12))
-        self.batch_label.pack(pady=5)
 
-        self.batch_entry = tk.Entry(master, width=30)
-        self.batch_entry.pack(pady=5)
+        # --- Batch Number Field ---
+        batch_frame = tk.Frame(master)
+        batch_frame.pack(pady=10, fill='x', padx=50)
+
+        self.batch_label = tk.Label(batch_frame, text="Batch Number:", font=("Arial", 12))
+        self.batch_label.pack(side='left', padx=(0, 10))
+
+        self.batch_entry = tk.Entry(batch_frame, width=30)
+        self.batch_entry.pack(side='right', expand=True, fill='x')
         # --- End Batch Number Field ---
 
-        self.back_button = tk.Button(master, text="Back to Main Menu", command=self.go_back, width=15, height=1)
-        self.back_button.pack(pady=20)
+        # --- Analysis Dropdown List ---
+        analysis_frame = tk.Frame(master)
+        analysis_frame.pack(pady=10, fill='x', padx=50)
 
-        # Handle window close button (X) directly to go back
+        self.analysis_label = tk.Label(analysis_frame, text="Analysis Type:", font=("Arial", 12))
+        self.analysis_label.pack(side='left', padx=(0, 10))
+
+        self.analysis_options = ["Volume", "Mass", "Temperature", "Density", "Purity"]
+        self.selected_analysis = tk.StringVar(master)
+        self.selected_analysis.set(self.analysis_options[0])
+
+        self.analysis_dropdown = tk.OptionMenu(analysis_frame, self.selected_analysis, *self.analysis_options)
+        self.analysis_dropdown.pack(side='right', expand=True, fill='x')
+        self.analysis_dropdown.config(width=25)
+        # --- End Analysis Dropdown List ---
+
+        # --- Buttons ---
+        button_frame = tk.Frame(master)
+        button_frame.pack(side='bottom', pady=20, fill='x', padx=20)
+
+        self.import_button = tk.Button(button_frame, text="Import Measurement", command=self.import_measurement, width=20, height=2, font=("Arial", 10, "bold"))
+        self.import_button.pack(side='left', padx=10, expand=True)
+
+        self.back_button = tk.Button(button_frame, text="Back to Main Menu", command=self.go_back, width=20, height=2, font=("Arial", 10))
+        self.back_button.pack(side='right', padx=10, expand=True)
+        # --- End Buttons ---
+
         self.master.protocol("WM_DELETE_WINDOW", self.go_back)
 
     def go_back(self):
-        self.master.destroy()  # Close the current subwindow
-        self.main_window_root.deiconify() # Show the main window again
+        self.master.destroy()
+        self.main_window_root.deiconify()
 
+    def import_measurement(self):
+        # Create a new Toplevel window for the confirmation message
+        confirmation_window = tk.Toplevel(self.master)
+        confirmation_window.title("Import Status")
+        confirmation_window.geometry("250x100") # Set size for the small window
+        confirmation_window.transient(self.master) # Make it appear on top of the main window
+        confirmation_window.grab_set() # Make it modal (user must interact with it)
+
+        # Label to display the message
+        message_label = tk.Label(confirmation_window, text="Measurement Imported!", font=("Arial", 12, "bold"))
+        message_label.pack(pady=20)
+
+        # Button to close the confirmation window
+        ok_button = tk.Button(confirmation_window, text="OK", command=confirmation_window.destroy)
+        ok_button.pack(pady=5)
+
+        # Center the new window relative to its parent (optional, but nice UX)
+        self.center_window(confirmation_window)
+
+        # You can still retrieve batch and analysis if needed for actual import logic
+        selected_batch = self.batch_entry.get()
+        selected_analysis_type = self.selected_analysis.get()
+        print(f"Importing for Batch: {selected_batch}, Analysis: {selected_analysis_type}") # For console debug
+
+        # The actual data import logic would go here before showing the confirmation window
 class Subwindow2:
     def __init__(self, master, main_window_root):
         self.master = master
